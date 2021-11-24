@@ -30,7 +30,16 @@ func NewUndirected() *Graph {
 	return &Graph{directed: false}
 }
 
-func (g *Graph) AddVertex(v *Vertex) error {
+func (g *Graph) AddVertices(v ...*Vertex) error {
+	for _, v := range v {
+		if err := g.addVertex(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (g *Graph) addVertex(v *Vertex) error {
 	if g.vertexExists(v) {
 		return fmt.Errorf("%w: %d", ErrVertexExists, v.Value)
 	}
@@ -38,18 +47,16 @@ func (g *Graph) AddVertex(v *Vertex) error {
 	return nil
 }
 
-func (g *Graph) AddVertices(v ...*Vertex) error {
-	var err error
-	for _, v := range v {
-		err = g.AddVertex(v)
-		if err != nil {
+func (g *Graph) AddEdges(e ...*Edge) error {
+	for _, e := range e {
+		if err := g.addEdge(e); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (g *Graph) AddEdge(e *Edge) error {
+func (g *Graph) addEdge(e *Edge) error {
 	// Check if edge exists
 	for _, edge := range g.edges {
 		if edge == e {
@@ -59,13 +66,13 @@ func (g *Graph) AddEdge(e *Edge) error {
 
 	// Ensure vertices exist
 	if !g.vertexExists(e.start) {
-		err := g.AddVertices(e.start)
+		err := g.addVertex(e.start)
 		if err != nil {
 			return err
 		}
 	}
 	if !g.vertexExists(e.end) {
-		err := g.AddVertices(e.end)
+		err := g.addVertex(e.end)
 		if err != nil {
 			return err
 		}
@@ -74,12 +81,12 @@ func (g *Graph) AddEdge(e *Edge) error {
 	// Add edge
 	g.edges = append(g.edges, e)
 
-	err := e.start.AddEdge(e)
+	err := e.start.addEdge(e)
 	if err != nil {
 		return err
 	}
 	if !g.directed { // Undirected have edge both ways
-		err = e.end.AddEdge(e)
+		err = e.end.addEdge(e)
 		if err != nil {
 			return err
 		}
@@ -125,7 +132,7 @@ func (g *Graph) GetWeight() float64 {
 func (g *Graph) Reverse() {
 	for _, e := range g.edges {
 		_ = e.start.DeleteEdge(e)
-		_ = e.end.AddEdge(e)
+		_ = e.end.addEdge(e)
 		e.Reverse()
 	}
 }

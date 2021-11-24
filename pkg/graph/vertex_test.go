@@ -21,7 +21,7 @@ func TestVertex(t *testing.T) {
 		v1 := NewVertex(1)
 
 		e := NewEdge(v0, v1, 5)
-		assert.NoError(t, v0.AddEdge(e))
+		assert.NoError(t, v0.AddEdges(e))
 
 		assert.True(t, v0.HasEdge(e))
 		assert.False(t, v1.HasEdge(e))
@@ -36,9 +36,7 @@ func TestVertex(t *testing.T) {
 
 		e01 := NewEdge(v0, v1, 0)
 		e02 := NewEdge(v0, v2, 0)
-
-		assert.NoError(t, v0.AddEdge(e01))
-		assert.NoError(t, v0.AddEdge(e02))
+		assert.NoError(t, v0.AddEdges(e01, e02))
 
 		assert.True(t, v0.HasEdge(e01))
 		assert.False(t, v1.HasEdge(e01))
@@ -71,9 +69,7 @@ func TestVertex(t *testing.T) {
 
 		e01 := NewEdge(v0, v1, 0)
 		e02 := NewEdge(v0, v2, 0)
-
-		assert.NoError(t, v0.AddEdge(e01))
-		assert.NoError(t, v0.AddEdge(e02))
+		assert.NoError(t, v0.AddEdges(e01, e02))
 
 		assert.True(t, v0.HasEdge(e01))
 		assert.False(t, v1.HasEdge(e01))
@@ -101,9 +97,7 @@ func TestVertex(t *testing.T) {
 
 		e01 := NewEdge(v0, v1, 0)
 		e02 := NewEdge(v0, v2, 0)
-
-		assert.NoError(t, v0.AddEdge(e01))
-		assert.NoError(t, v0.AddEdge(e02))
+		assert.NoError(t, v0.AddEdges(e01, e02))
 
 		assert.Len(t, v1.GetNeighbors(), 0)
 
@@ -121,9 +115,7 @@ func TestVertex(t *testing.T) {
 
 		e10 := NewEdge(v1, v0, 0)
 		e20 := NewEdge(v2, v0, 0)
-
-		assert.NoError(t, v0.AddEdge(e10))
-		assert.NoError(t, v0.AddEdge(e20))
+		assert.NoError(t, v0.AddEdges(e10, e20))
 
 		assert.Len(t, v1.GetNeighbors(), 0)
 
@@ -140,7 +132,7 @@ func TestVertex(t *testing.T) {
 		v2 := NewVertex(2)
 
 		e01 := NewEdge(v0, v1, 0)
-		assert.NoError(t, v0.AddEdge(e01))
+		assert.NoError(t, v0.AddEdges(e01))
 
 		assert.True(t, v0.HasNeighbor(v1))
 		assert.False(t, v0.HasNeighbor(v2))
@@ -152,7 +144,7 @@ func TestVertex(t *testing.T) {
 		v2 := NewVertex(2)
 
 		e01 := NewEdge(v0, v1, 0)
-		assert.NoError(t, v0.AddEdge(e01))
+		assert.NoError(t, v0.AddEdges(e01))
 
 		assert.Equal(t, e01, v0.FindEdge(v1))
 		assert.Nil(t, v0.FindEdge(v2))
@@ -166,15 +158,15 @@ func TestVertex(t *testing.T) {
 		assert.Equal(t, 0, v0.GetDegree())
 
 		e01 := NewEdge(v0, v1, 0)
-		assert.NoError(t, v0.AddEdge(e01))
+		assert.NoError(t, v0.AddEdges(e01))
 		assert.Equal(t, 1, v0.GetDegree())
 
 		e10 := NewEdge(v1, v0, 0)
-		assert.NoError(t, v0.AddEdge(e10))
+		assert.NoError(t, v0.AddEdges(e10))
 		assert.Equal(t, 2, v0.GetDegree())
 
 		e20 := NewEdge(v2, v0, 0)
-		assert.NoError(t, v0.AddEdge(e20))
+		assert.NoError(t, v0.AddEdges(e20))
 		assert.Equal(t, 3, v0.GetDegree())
 
 		assert.Len(t, v0.GetEdges(), 3)

@@ -14,7 +14,16 @@ func NewVertex(value int) *Vertex {
 	return &Vertex{Value: value}
 }
 
-func (v *Vertex) AddEdge(e *Edge) error {
+func (v *Vertex) AddEdges(e ...*Edge) error {
+	for _, e := range e {
+		if err := v.addEdge(e); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v *Vertex) addEdge(e *Edge) error {
 	for _, edge := range v.edges {
 		if edge == e {
 			return fmt.Errorf("%w: %s", ErrEdgeExists, e)

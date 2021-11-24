@@ -21,7 +21,7 @@ func main() {
 	}
 
 	edge := graph.NewEdge(v[0], v[1], 0)
-	err = g.AddEdge(edge)
+	err = g.AddEdges(edge)
 	if err != nil {
 		log.Fatalln(err)
 	}
