@@ -3,6 +3,7 @@ package graph
 import (
 	"errors"
 	"fmt"
+	"math"
 	"sort"
 	"strings"
 )
@@ -16,31 +17,34 @@ var (
 )
 
 type Graph struct {
-	vertices map[int]*Vertex
-	edges    []*Edge
 	directed bool
+	edges    []*Edge
+	vertices []*Vertex
 }
 
 func NewDirected() *Graph {
-	return &Graph{
-		vertices: make(map[int]*Vertex),
-		directed: true,
-	}
+	return &Graph{directed: true}
 }
 
 func NewUndirected() *Graph {
-	return &Graph{
-		vertices: make(map[int]*Vertex),
-		directed: false,
+	return &Graph{directed: false}
+}
+
+func (g *Graph) AddVertex(v *Vertex) error {
+	if g.vertexExists(v) {
+		return fmt.Errorf("%w: %d", ErrVertexExists, v.Value)
 	}
+	g.vertices = append(g.vertices, v)
+	return nil
 }
 
 func (g *Graph) AddVertices(v ...*Vertex) error {
+	var err error
 	for _, v := range v {
-		if _, ok := g.vertices[v.Value]; ok {
-			return fmt.Errorf("%w: %d", ErrVertexExists, v.Value)
+		err = g.AddVertex(v)
+		if err != nil {
+			return err
 		}
-		g.vertices[v.Value] = v
 	}
 	return nil
 }
@@ -54,13 +58,13 @@ func (g *Graph) AddEdge(e *Edge) error {
 	}
 
 	// Ensure vertices exist
-	if _, ok := g.vertices[e.start.Value]; !ok {
+	if !g.vertexExists(e.start) {
 		err := g.AddVertices(e.start)
 		if err != nil {
 			return err
 		}
 	}
-	if _, ok := g.vertices[e.end.Value]; !ok {
+	if !g.vertexExists(e.end) {
 		err := g.AddVertices(e.end)
 		if err != nil {
 			return err
@@ -104,11 +108,10 @@ func (g *Graph) DeleteEdge(e *Edge) error {
 }
 
 func (g *Graph) FindEdge(start, end *Vertex) *Edge {
-	v, ok := g.vertices[start.Value]
-	if !ok {
+	if !g.vertexExists(start) {
 		return nil
 	}
-	return v.FindEdge(end)
+	return start.FindEdge(end)
 }
 
 func (g *Graph) GetWeight() float64 {
@@ -127,11 +130,23 @@ func (g *Graph) Reverse() {
 	}
 }
 
-func (g *Graph) GetAdjacencyMatrix() map[*Vertex]map[*Vertex]*Edge {
-	adjacency := make(map[*Vertex]map[*Vertex]*Edge)
-	for _, v := range g.vertices {
-		for _, n := range v.GetNeighbors() {
-			adjacency[v][n] = g.FindEdge(v, n)
+func (g *Graph) GetAdjacencyMatrix() [][]float64 {
+	const inf = math.MaxFloat64
+
+	adjacency := make([][]float64, len(g.vertices))
+	for i := range adjacency {
+		adjacency[i] = make([]float64, len(g.vertices))
+		for j := range adjacency[i] {
+			adjacency[i][j] = inf
+		}
+	}
+
+	indices := g.GetVerticesIndices()
+	for i, v := range g.vertices {
+		for _, neighbor := range v.GetNeighbors() {
+			ni := indices[neighbor]
+			edge := g.FindEdge(v, neighbor)
+			adjacency[i][ni] = edge.Weight
 		}
 	}
 	return adjacency
@@ -152,4 +167,29 @@ func (g *Graph) String() string {
 		sb.WriteString(g.vertices[k].String())
 	}
 	return sb.String()
+}
+
+func (g *Graph) GetVerticesIndices() map[*Vertex]int {
+	indices := make(map[*Vertex]int)
+	for i, v := range g.vertices {
+		indices[v] = i
+	}
+	return indices
+}
+
+func (g *Graph) GetVertices() []*Vertex {
+	return g.vertices
+}
+
+func (g *Graph) GetEdges() []*Edge {
+	return g.edges
+}
+
+func (g *Graph) vertexExists(v *Vertex) bool {
+	for _, vertex := range g.vertices {
+		if vertex == v {
+			return true
+		}
+	}
+	return false
 }
