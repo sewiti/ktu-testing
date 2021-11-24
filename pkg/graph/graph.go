@@ -120,8 +120,10 @@ func (g *Graph) GetWeight() float64 {
 }
 
 func (g *Graph) Reverse() {
-	for _, edge := range g.edges {
-		edge.Reverse()
+	for _, e := range g.edges {
+		_ = e.start.DeleteEdge(e)
+		_ = e.end.AddEdge(e)
+		e.Reverse()
 	}
 }
 
