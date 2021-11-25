@@ -338,3 +338,80 @@ func TestGraph(t *testing.T) {
 		assert.Equal(t, expected, adjacency)
 	})
 }
+
+func TestGraph_String(t *testing.T) {
+	type graphConstructor func() *Graph
+
+	tests := []struct {
+		name         string
+		graphType    graphConstructor
+		vertices     []*Vertex
+		want         string
+		errAssertion assert.ErrorAssertionFunc
+	}{
+		{
+			name:         "no vertices",
+			graphType:    NewUndirected,
+			vertices:     nil,
+			want:         "",
+			errAssertion: assert.NoError,
+		},
+		{
+			name:      "single vertex",
+			graphType: NewUndirected,
+			vertices: []*Vertex{
+				NewVertex(0),
+			},
+			want:         "0",
+			errAssertion: assert.NoError,
+		},
+		{
+			name:      "multiple vertices",
+			graphType: NewUndirected,
+			vertices: []*Vertex{
+				NewVertex(5),
+				NewVertex(2),
+				NewVertex(3),
+				NewVertex(8),
+			},
+			want:         "5 2 3 8",
+			errAssertion: assert.NoError,
+		},
+		{
+			name:      "multiple vertices in directed graph",
+			graphType: NewDirected,
+			vertices: []*Vertex{
+				NewVertex(1),
+				NewVertex(9),
+				NewVertex(4),
+				NewVertex(7),
+			},
+			want:         "1 9 4 7",
+			errAssertion: assert.NoError,
+		},
+		{
+			name:      "duplicate vertex",
+			graphType: NewUndirected,
+			vertices: func() []*Vertex {
+				vertex5 := NewVertex(5)
+				return []*Vertex{
+					vertex5,
+					NewVertex(2),
+					NewVertex(3),
+					vertex5,
+				}
+			}(),
+			want:         "5 2 3",
+			errAssertion: assert.Error,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g := tt.graphType()
+			err := g.AddVertices(tt.vertices...)
+			tt.errAssertion(t, err)
+			assert.Equal(t, tt.want, g.String())
+		})
+	}
+}
