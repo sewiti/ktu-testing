@@ -9,11 +9,8 @@ import (
 )
 
 var (
-	ErrVertexExists    = errors.New("vertex already exists")
-	ErrVertexNotExists = errors.New("vertex does not exist")
-
-	ErrEdgeExists    = errors.New("edge already exists")
-	ErrEdgeNotExists = errors.New("edge does not exist")
+	ErrExists    = errors.New("already exists")
+	ErrNotExists = errors.New("does not exist")
 )
 
 type Graph struct {
@@ -41,7 +38,7 @@ func (g *Graph) AddVertices(v ...*Vertex) error {
 
 func (g *Graph) addVertex(v *Vertex) error {
 	if g.vertexExists(v) {
-		return fmt.Errorf("%w: %d", ErrVertexExists, v.Value)
+		return fmt.Errorf("vertex %w: %d", ErrExists, v.Value)
 	}
 	g.vertices = append(g.vertices, v)
 	return nil
@@ -60,7 +57,7 @@ func (g *Graph) addEdge(e *Edge) error {
 	// Check if edge exists
 	for _, edge := range g.edges {
 		if edge == e {
-			return fmt.Errorf("%w: %s", ErrEdgeExists, e)
+			return fmt.Errorf("edge %w: %s", ErrExists, e)
 		}
 	}
 
@@ -111,7 +108,7 @@ func (g *Graph) DeleteEdge(e *Edge) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("%w: %s", ErrEdgeNotExists, e)
+	return fmt.Errorf("edge %w: %s", ErrNotExists, e)
 }
 
 func (g *Graph) FindEdge(start, end *Vertex) *Edge {

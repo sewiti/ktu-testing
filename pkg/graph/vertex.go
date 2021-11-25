@@ -26,7 +26,7 @@ func (v *Vertex) AddEdges(e ...*Edge) error {
 func (v *Vertex) addEdge(e *Edge) error {
 	for _, edge := range v.edges {
 		if edge == e {
-			return fmt.Errorf("%w: %s", ErrEdgeExists, e)
+			return fmt.Errorf("edge %w: %s", ErrExists, e)
 		}
 	}
 	v.edges = append(v.edges, e)
@@ -40,7 +40,7 @@ func (v *Vertex) DeleteEdge(e *Edge) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("%w: %s", ErrEdgeNotExists, e)
+	return fmt.Errorf("edge %w: %s", ErrNotExists, e)
 }
 
 func (v *Vertex) GetNeighbors() []*Vertex {
