@@ -1,5 +1,6 @@
 # KTU Testing
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/sewiti/ktu-testing.svg)](https://pkg.go.dev/github.com/sewiti/ktu-testing)
 [![Test](https://github.com/sewiti/ktu-testing/actions/workflows/test.yml/badge.svg)](https://github.com/sewiti/ktu-testing/actions/workflows/test.yml)
 
 Kaunas University of Technology Testing lecture assignment.  
