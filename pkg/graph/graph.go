@@ -9,7 +9,10 @@ import (
 )
 
 var (
-	ErrExists    = errors.New("already exists")
+	// ErrExists reports that the object already exists.
+	ErrExists = errors.New("already exists")
+
+	// ErrNotExists reports that the object does not exist.
 	ErrNotExists = errors.New("does not exist")
 )
 
